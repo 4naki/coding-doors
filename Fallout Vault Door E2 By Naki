@@ -1,0 +1,121 @@
+@name Fallout Vault Door
+@inputs Button
+@persist Val Val2 Size OpeningSpeed RotatingSpeed
+@model models/hunter/blocks/cube4x4x1.mdl
+interval(100)
+
+if(first()){
+    
+    Size=2              #def. 1
+    OpeningSpeed=20     #def. 20
+    RotatingSpeed=30    #def. 30
+    
+    BaseMaterial="sprops/textures/gear_metal"
+    DoorMaterial="sprops/textures/sprops_metal3"
+    RackMaterial="sprops/textures/gear_metal"
+    
+    
+    
+    entity():setAlpha(0)
+    
+    #Door Moving Holo
+    holoCreate(1)
+    holoParent(1,entity())
+    holoAng(1,entity():toWorld(ang(0,0,0)))
+    holoAlpha(1,0)
+    
+    #Door Rotating Holo
+    holoCreate(2)
+    holoPos(2,holoEntity(1):toWorld(vec(0,0,0)))
+    holoAng(2,holoEntity(1):toWorld(ang(0,0,0)))
+    holoParent(2,1)
+    holoAlpha(2,0)
+    
+    #Door
+    holoCreate(3)
+    holoModel(3,"models/sprops/mechanics/sgears/spur_16t_s.mdl")
+    holoPos(3,holoEntity(2):toWorld(vec(0,0,0)))
+    holoAng(3,holoEntity(2):toWorld(ang(0,-17,0)))
+    holoParent(3,2)
+    holoScale(3,vec(10,10,7)*Size)
+    holoMaterial(3,DoorMaterial)
+    
+    #Rack
+    holoCreate(4)
+    holoModel(4,"models/sprops/mechanics/racks/rack_12t_l.mdl")
+    holoPos(4,entity():toWorld(vec(0,44.8,100*0.235)*Size))
+    holoAng(4,entity():toWorld(ang(90,0,90)))
+    holoParent(4,entity())
+    holoScale(4,vec(4,5,2)*Size)
+    holoMaterial(4,RackMaterial)
+    
+    holoCreate(5)
+    holoModel(5,"models/sprops/misc/sq_holes/sqhole_d0_24.mdl")
+    holoPos(5,entity():toWorld(vec(0,0,0)))
+    holoAng(5,entity():toWorld(ang(0,0,90)))
+    holoParent(5,entity())
+    holoScale(5,vec(4,7.5,4)*Size)
+    holoMaterial(5,BaseMaterial)
+    
+    holoCreate(6)
+    holoPos(6,entity():toWorld(vec(0,0,0)))
+    holoAng(6,entity():toWorld(ang(0,(45/4),0)))
+    holoParent(6,entity())
+    holoAlpha(6,0)
+    
+    for(I=1,16){
+        holoCreate(I+6)
+        holoPos(I+6,holoEntity(6):toWorld(vec(0,0,0)))
+        holoAng(I+6,holoEntity(6):toWorld(ang(0,(45/4)*I*2,0)))
+        holoParent(I+6,holoEntity(6))
+        holoAlpha(I+6,0)
+    }
+    for(I=1,16){
+        holoCreate(I+6+16)
+        holoModel(I+6+16,"models/sprops/geometry/hhex_12.mdl")
+        holoPos(I+6+16,holoEntity(I+6):toWorld(vec(0,42.5,0)*Size))
+        holoAng(I+6+16,holoEntity(I+6):toWorld(ang(0,0,90)))
+        holoParent(I+6+16,holoEntity(I+6))
+        holoScale(I+6+16,vec(1.325,7.5,3)*Size)
+        holoMaterial(I+6+16,BaseMaterial)
+    }
+    holoCreate(999)
+    holoModel(999,"models/sprops/geometry/fring_30.mdl")
+    holoPos(999,entity():toWorld(vec(0,0,0)))
+    holoAng(999,entity():toWorld(ang(0,0,90)))
+    holoParent(999,entity())
+    holoScale(999,vec(3.7,7.55,3.7)*Size)
+    holoMaterial(999,BaseMaterial)
+
+}
+
+if(Button){
+    if(Val2==0){
+        if(Val<100){
+            Val+=100/OpeningSpeed
+        }
+    }
+    if(Val==100){
+        if(Val2<90){
+            Val2+=90/RotatingSpeed
+        }
+    }
+}else{
+    if(Val2==0){
+        if(Val>0){
+            Val-=100/OpeningSpeed
+        }
+    }
+    if(Val==100){
+        if(Val2>0){
+            Val2-=90/RotatingSpeed
+        }
+    }
+}
+holoPos(1, entity():toWorld(vec(-Val2*0.685,0,Val*0.235)*Size))
+holoAng(2, holoEntity(1):toWorld(ang(0,-Val2,0)))
+
+
+if(dupefinished()){
+    reset()
+}
