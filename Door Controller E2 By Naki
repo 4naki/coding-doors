@@ -18,7 +18,7 @@ if(first()){
     LockDown=0
     timer("blink",10)
     
-    Version="V1.5"
+    Version="V1.6"
 }
 if(LockDown==0){
     if(AutoCloseOwnerDetected==1){
@@ -56,15 +56,9 @@ if(LoggedIn==1){
     }
     if(Input1=="lockdown"){
         LockDown=1
-        if(Toggle==1){
-            Toggle=0
-        }
     }
     if(Input2=="lockdown"){
         LockDown=1
-        if(Toggle==0){
-            Toggle=1
-        }
     }
 if(Input1=="open"){
     if(Toggle==0){
@@ -142,6 +136,11 @@ if(changed(Toggle)){
         LoggedIn=0
     }
 }
+}
+if(changed(LockDown)&LockDown){
+    if(Toggle==1){
+        Toggle=0
+    }
 }
 if(changed(LoggedIn)){
     timer("refresh",10)
