@@ -85,7 +85,9 @@ if(ForceClose){
 }
 
 if(changed(Toggle)&Toggle){
-    timer("autoclose",AutoCloseTime)
+    if(AutoClose){
+        timer("autoclose",AutoCloseTime)
+    }
 }
 if(clk("autoclose")){
     if(Toggle==1){
