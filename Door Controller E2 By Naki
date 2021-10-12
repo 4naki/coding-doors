@@ -12,7 +12,7 @@ if(first()){
     
     AutoLogoutAfterClosing=0    #automatically log you out when the door closes
     
-    Password="DEFAULTPASSWORD"  #change this to what ever you want to use as your password
+    Password="boobatroopa"  #change this to what ever you want to use as your password
     LoggedIn=0
     Toggle=0
     LockDown=0
@@ -55,10 +55,10 @@ if(LoggedIn==1){
         LoggedIn=0
     }
     if(Input1=="lockdown"){
-        LockDown=1
+        LockDown=!LockDown
     }
     if(Input2=="lockdown"){
-        LockDown=1
+        LockDown=!LockDown
     }
 if(Input1=="open"){
     if(Toggle==0){
