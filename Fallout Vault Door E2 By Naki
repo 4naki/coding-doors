@@ -1,12 +1,13 @@
 @name Fallout Vault Door
 @inputs Button
-@persist Val Val2 Size OpeningSpeed RotatingSpeed
-@model models/hunter/blocks/cube4x4x1.mdl
+@outputs Fade Fade2
+@persist Val Val2 Size OpeningSpeed RotatingSpeed Fade
+@model models/sprops/cuboids/height12/size_1/cube_12x12x12.mdl
 interval(100)
 
 if(first()){
     
-    Size=2              #def. 1
+    Size=1.35           #def. 1
     OpeningSpeed=20     #def. 20
     RotatingSpeed=30    #def. 30
     
@@ -43,10 +44,10 @@ if(first()){
     #Rack
     holoCreate(4)
     holoModel(4,"models/sprops/mechanics/racks/rack_12t_l.mdl")
-    holoPos(4,entity():toWorld(vec(0,44.8,100*0.235)*Size))
+    holoPos(4,entity():toWorld(vec(-30.65,44.8,100*0.235)*Size))
     holoAng(4,entity():toWorld(ang(90,0,90)))
     holoParent(4,entity())
-    holoScale(4,vec(4,5,2)*Size)
+    holoScale(4,vec(3.5,5,2)*Size)
     holoMaterial(4,RackMaterial)
     
     holoCreate(5)
@@ -115,7 +116,13 @@ if(Button){
 holoPos(1, entity():toWorld(vec(-Val2*0.685,0,Val*0.235)*Size))
 holoAng(2, holoEntity(1):toWorld(ang(0,-Val2,0)))
 
-
+if(Val2==90){
+    Fade=1
+    Fade2=0
+}else{
+    Fade=0
+    Fade2=1
+}
 if(dupefinished()){
     reset()
 }
