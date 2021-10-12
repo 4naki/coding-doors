@@ -1,0 +1,82 @@
+@name Sliding Door
+@inputs Door:entity
+@outputs Fade
+@persist Val Toggle Fade
+@trigger none
+interval(100)
+if(first()){
+    holoCreate(1)
+    holoParent(1,Door)
+    holoPos(1,Door:pos())
+    holoAng(1,Door:toWorld(ang(0,0,0)))
+    holoModel(1,"models/sprops/rectangles/size_6/rect_96x144x3.mdl")
+    holoMaterial(1,"sprops/textures/sprops_metal3")
+}
+
+if(Toggle){
+    if(Val<100){
+        Val+=2
+    }
+    Fade=1
+}else{
+    if(Val>0){
+        Val-=2
+    }
+    Fade=0
+}
+
+holoPos(1, Door:toWorld(vec(0,Val*0.9,0)))
+
+foreach(I,E:entity=players()){
+    if(E:aimEntity()==Door){
+        if(E:keyUse()){
+            if(E:pos():distance(Door:pos())<300){
+                if(Toggle==0){
+                    Toggle=1
+                }
+            }
+        }
+    }
+}
+if(Toggle){
+if(changed(Val)){
+    if(Val==100){
+        timer("autoclose",6500)
+    }
+}
+}
+if(changed(Val)){
+    if(Val==2){
+        if(Toggle){
+            timer("open",10)
+        }
+    }
+    if(Val==100-2){
+        if(Toggle){
+            timer("stop",10)
+        }
+    }
+    if(Val==100-2){
+        if(!Toggle){
+            timer("open",10)
+        }
+    }
+    if(Val==2){
+        if(!Toggle){
+            timer("stop",10)
+        }
+    }
+}
+if(clk("autoclose")){
+    Toggle=0
+}
+if(clk("open")){
+    Door:soundPlay("move",0,"doors/heavy_metal_move1.wav")
+}
+if(clk("stop")){
+    Door:soundPlay("move",0,"")
+    Door:soundPlay("stop",0,"doors/heavy_metal_stop1.wav")
+}
+if(dupefinished()){
+    reset()
+}
