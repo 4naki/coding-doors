@@ -1,7 +1,7 @@
 @name Door Controller
 @inputs ForceClose Input1:string Input2:string DetectedEntities:array
-@outputs Toggle String:string
-@persist Toggle Password:string AutoCloseTimeText:string AutoCloseText:string Version:string AutoCloseTime AutoClose String:string LoggedIn Text:string LogInText:string AllowUser Blink:string AutoLogoutAfterClosing AutoCloseOwnerDetected AutoDetectOwner AutoCloseTimeOwnerDetected
+@outputs Toggle Screen1:string Screen2:string
+@persist Toggle Screen1:string Screen2:string Password:string Input2Override:string LockDown LockDownText:string AutoCloseTimeText:string AutoCloseText:string Version:string AutoCloseTime AutoClose String:string LoggedIn Text:string LogInText:string AllowUser Blink:string AutoLogoutAfterClosing AutoCloseOwnerDetected AutoDetectOwner AutoCloseTimeOwnerDetected
 if(first()){
     AutoClose=0                 #in case you want to have an autoclose function
     AutoCloseTime=25000         #autoclose delay in milliseconds 1000=1 second
@@ -15,23 +15,26 @@ if(first()){
     Password="DEFAULTPASSWORD"  #change this to what ever you want to use as your password
     LoggedIn=0
     Toggle=0
+    LockDown=0
     timer("blink",10)
     
-    Version="V1.4"
+    Version="V1.5"
 }
-if(AutoCloseOwnerDetected==1){
-if(AutoDetectOwner==1){
-if(DetectedEntities:count()>0){
-foreach(I,E:entity=DetectedEntities){
-    if(E==owner()){
-        if(Toggle==0){
-            Toggle=1
-            timer("autoclose",AutoCloseTimeOwnerDetected+4000)
+if(LockDown==0){
+    if(AutoCloseOwnerDetected==1){
+        if(AutoDetectOwner==1){
+            if(DetectedEntities:count()>0){
+                foreach(I,E:entity=DetectedEntities){
+                    if(E==owner()){
+                        if(Toggle==0){
+                            Toggle=1
+                            timer("autoclose",AutoCloseTimeOwnerDetected+4000)
+                        }
+                    }
+                }
+            }
         }
     }
-}
-}
-}
 }
 if(LoggedIn==1){
     if(changed(Input1)&Input1){
@@ -48,15 +51,27 @@ if(LoggedIn==1){
     if(Input1=="logout"){
         LoggedIn=0
     }
-    if(Input2=="logout"){
+    if(Input2Override=="logout"){
         LoggedIn=0
+    }
+    if(Input1=="lockdown"){
+        LockDown=1
+        if(Toggle==1){
+            Toggle=0
+        }
+    }
+    if(Input2=="lockdown"){
+        LockDown=1
+        if(Toggle==0){
+            Toggle=1
+        }
     }
 if(Input1=="open"){
     if(Toggle==0){
         Toggle=1
     }
 }
-if(Input2=="open"){
+if(Input2Override=="open"){
     if(Toggle==0){
         Toggle=1
     }
@@ -66,7 +81,7 @@ if(Input1=="close"){
         Toggle=0
     }
 }
-if(Input2=="close"){
+if(Input2Override=="close"){
     if(Toggle==1){
         Toggle=0
     }
@@ -75,7 +90,7 @@ if(Input2=="close"){
     if(Input1==Password){
         LoggedIn=1
     }
-    if(Input2==Password){
+    if(Input2Override==Password){
         LoggedIn=1
     }
 }
@@ -97,9 +112,9 @@ if(clk("autoclose")){
 }
 if(LoggedIn==0){
     LogInText="Logged In: No"
-    if(changed(Input1|Input2)&Input1|Input2){
+    if(changed(Input1|Input2Override)&Input1|Input2Override){
     if(Input1!=Password){
-        if(Input2!=Password){
+        if(Input2Override!=Password){
             AllowUser=0
             Text="Invalid Password!"
             timer("refresh",3000)
@@ -109,7 +124,7 @@ if(LoggedIn==0){
             timer("refresh",3000)
         }
     }else{
-    if(Input2!=Password){
+    if(Input2Override!=Password){
         AllowUser=0
         Text="Invalid Password!"
         timer("refresh",3000)
@@ -160,5 +175,18 @@ if(AutoClose){
     AutoCloseText="Auto Close: No"
     AutoCloseTimeText="Auto Close Delay: N/A"
 }
+if(LockDown){
+    Input2Override=""
+    LockDownText="Lockdown: Yes"
+    Screen2="Vault Control System "+Version+"<br>"+
+    "----------------------------------------------------------------"+"<br>"+"<br>"+"Door Status: Unknown"+"<br>"+"Auto Close: Unknown"+"<br>"+"Auto Close Delay: Unknown"+"<br>"+"Lockdown: Unknown"+"<br>"+"Logged In: Unknown"+"<br>"+"<br>"+"----------------------------------------------------------------"+"<br>"+"Invalid Access Clearance!"
+}else{
+    Input2Override=Input2
+    LockDownText="Lockdown: No"
+    Screen2=String
+}
 String="Vault Control System "+Version+"<br>"+
-"----------------------------------------------------------------"+"<br>"+"<br>"+DoorStatus+"<br>"+AutoCloseText+"<br>"+AutoCloseTimeText+"<br>"+LogInText+"<br>"+"<br>"+"----------------------------------------------------------------"+"<br>"+Text
+"----------------------------------------------------------------"+"<br>"+"<br>"+DoorStatus+"<br>"+AutoCloseText+"<br>"+AutoCloseTimeText+"<br>"+LockDownText+"<br>"+LogInText+"<br>"+"<br>"+"----------------------------------------------------------------"+"<br>"+Text
+
+Screen1=String
+
