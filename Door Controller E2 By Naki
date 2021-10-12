@@ -1,46 +1,37 @@
 @name Door Controller
-@inputs ForceClose Input1:string Input2:string
+@inputs ForceClose Input1:string Input2:string DetectedEntities:array
 @outputs Toggle String:string
-@persist Toggle Password:string AutoCloseTime AutoClose String:string LoggedIn Text:string LogInText:string AllowUser Blink:string AutoLogoutAfterClosing
-
-#[
-    how to use:
-    
-    spawn 2 text screens and 2 text entries from wire
-    
-    screen options:
-    
-    Text Size = 3
-    
-    Horizontal Alignment = 0
-    
-    Vertical Alignment = 0
-    
-    text entry opntions:
-    
-    Hold Length = 2
-    
-    Disable Use = Unchecked
-    
-    Wire Input1 from this e2 to one of your text entries, Input2 to the other text entry
-    
-    Wire Button from Fallout Door E2 to Toggle in this e2
-    
-    From both screen wire String to this e2's String output
-    
-    that's all enjoy
-]#
-
+@persist Toggle Password:string Version:string AutoCloseTime AutoClose String:string LoggedIn Text:string LogInText:string AllowUser Blink:string AutoLogoutAfterClosing AutoCloseOwnerDetected AutoDetectOwner AutoCloseTimeOwnerDetected
 if(first()){
-    AutoClose=1                 #in case you want to have an autoclose function
+    AutoClose=0                 #in case you want to have an autoclose function
     AutoCloseTime=25000         #autoclose delay in milliseconds 1000=1 second
     
-    AutoLogoutAfterClosing=1    #automatically log you out when the door closes
+    AutoDetectOwner=0               #used for a detecting owner nearing the door from outside
+    AutoCloseOwnerDetected=1
+    AutoCloseTimeOwnerDetected=5500   #auto close time for detecting the owner
     
-    Password="DEFAULTPASSWORD"  #change this to what ever you want to use as your password
+    AutoLogoutAfterClosing=0    #automatically log you out when the door closes
+    
+    Password="boobatroopa"  #change this to what ever you want to use as your password
     LoggedIn=0
     Toggle=0
     timer("blink",10)
+    
+    Version="V1.3"
+}
+if(AutoCloseOwnerDetected==1){
+if(AutoDetectOwner==1){
+if(DetectedEntities:count()>0){
+foreach(I,E:entity=DetectedEntities){
+    if(E==owner()){
+        if(Toggle==0){
+            Toggle=1
+            timer("autoclose",AutoCloseTimeOwnerDetected+4000)
+        }
+    }
+}
+}
+}
 }
 if(LoggedIn==1){
     LogInText="Logged In: Yes"
@@ -86,7 +77,7 @@ if(ForceClose){
 
 if(changed(Toggle)&Toggle){
     if(AutoClose){
-        timer("autoclose",AutoCloseTime)
+        timer("autoclose",AutoCloseTime+4000)
     }
 }
 if(clk("autoclose")){
@@ -120,10 +111,12 @@ if(LoggedIn==0){
     }
     }
 }
+if(AutoLogoutAfterClosing){
 if(changed(Toggle)){
     if(Toggle==0){
         LoggedIn=0
     }
+}
 }
 if(changed(LoggedIn)){
     timer("refresh",10)
@@ -150,5 +143,5 @@ if(clk("blink2")){
     }
     timer("blink",600)
 }
-String="Vault Control System V1.0"+"<br>"+
+String="Vault Control System "+Version+"<br>"+
 "----------------------------------------------------------------"+"<br>"+"<br>"+DoorStatus+"<br>"+LogInText+"<br>"+"<br>"+"----------------------------------------------------------------"+"<br>"+Text
