@@ -1,0 +1,116 @@
+@name Door Controller
+@inputs ForceClose Input1:string Input2:string
+@outputs Toggle String:string
+@persist Toggle Password:string AutoCloseTime AutoClose String:string LoggedIn Text:string LogInText:string AllowUser Blink:string
+if(first()){
+    AutoClose=1                 #in case you want to have an autoclose function
+    AutoCloseTime=25000         #autoclose delay in milliseconds 1000=1 second
+    
+    Password="DEFAULTPASSWORD"  #change this to what ever you want to use as your password
+    LoggedIn=0
+    Toggle=0
+    timer("blink",10)
+}
+if(LoggedIn==1){
+    LogInText="Logged In: Yes"
+    if(Input1=="logout"){
+        LoggedIn=0
+    }
+    if(Input2=="logout"){
+        LoggedIn=0
+    }
+if(Input1=="open"){
+    if(Toggle==0){
+        Toggle=1
+    }
+}
+if(Input2=="open"){
+    if(Toggle==0){
+        Toggle=1
+    }
+}
+if(Input1=="close"){
+    if(Toggle==1){
+        Toggle=0
+    }
+}
+if(Input2=="close"){
+    if(Toggle==1){
+        Toggle=0
+    }
+}
+}else{
+    if(Input1==Password){
+        LoggedIn=1
+    }
+    if(Input2==Password){
+        LoggedIn=1
+    }
+}
+if(ForceClose){
+    if(Toggle==1){
+        Toggle=0
+    }
+}
+
+if(changed(Toggle)&Toggle){
+    timer("autoclose",AutoCloseTime)
+}
+if(clk("autoclose")){
+    if(Toggle==1){
+        Toggle=0
+    }
+}
+if(LoggedIn==0){
+    LogInText="Logged In: No"
+    if(changed(Input1|Input2)&Input1|Input2){
+    if(Input1!=Password){
+        if(Input2!=Password){
+            AllowUser=0
+            Text="Invalid Password!"
+            timer("refresh",3000)
+        }else{
+            AllowUser=0
+            Text="Logged in Successfully!"
+            timer("refresh",3000)
+        }
+    }else{
+    if(Input2!=Password){
+        AllowUser=0
+        Text="Invalid Password!"
+        timer("refresh",3000)
+    }else{
+        AllowUser=0
+        Text="Logged in Successfully!"
+        timer("refresh",3000)
+    }
+    }
+    }
+}
+if(changed(LoggedIn)){
+    timer("refresh",10)
+}
+if(Toggle==1){
+    DoorStatus="Door Status: Open"
+}
+if(Toggle==0){
+    stoptimer("autoclose")
+    DoorStatus="Door Status: Closed"
+}
+if(clk("refresh")){
+    AllowUser=1
+}
+if(clk("blink")){
+    if(AllowUser==1){
+        Text="User:_"
+    }
+    timer("blink2",600)
+}
+if(clk("blink2")){
+    if(AllowUser==1){
+        Text="User:"
+    }
+    timer("blink",600)
+}
+String="Vault Control System V1.0"+"<br>"+
+"----------------------------------------------------------------"+"<br>"+"<br>"+DoorStatus+"<br>"+LogInText+"<br>"+"<br>"+"----------------------------------------------------------------"+"<br>"+Text
