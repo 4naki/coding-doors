@@ -12,7 +12,7 @@ if(first()){
     
     AutoLogoutAfterClosing=0    #automatically log you out when the door closes
     
-    Password="boobatroopa"  #change this to what ever you want to use as your password
+    Password="DEFAULTPASSWORD"  #change this to what ever you want to use as your password
     LoggedIn=0
     Toggle=0
     LockDown=0
