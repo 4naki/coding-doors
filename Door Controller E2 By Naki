@@ -1,12 +1,14 @@
 @name Door Controller
 @inputs ForceClose Input1:string Input2:string
 @outputs Toggle String:string
-@persist Toggle Password:string AutoCloseTime AutoClose String:string LoggedIn Text:string LogInText:string AllowUser Blink:string
+@persist Toggle Password:string AutoCloseTime AutoClose String:string LoggedIn Text:string LogInText:string AllowUser Blink:string AutoLogoutAfterClosing
 if(first()){
     AutoClose=1                 #in case you want to have an autoclose function
     AutoCloseTime=25000         #autoclose delay in milliseconds 1000=1 second
     
-    Password="DEFAULTPASSWORD"  #change this to what ever you want to use as your password
+    AutoLogoutAfterClosing=1    #automatically log you out when the door closes
+    
+    Password="aezakmi"  #change this to what ever you want to use as your password
     LoggedIn=0
     Toggle=0
     timer("blink",10)
@@ -85,6 +87,11 @@ if(LoggedIn==0){
         timer("refresh",3000)
     }
     }
+    }
+}
+if(changed(Toggle)){
+    if(Toggle==0){
+        LoggedIn=0
     }
 }
 if(changed(LoggedIn)){
