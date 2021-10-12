@@ -1,5 +1,5 @@
 @name Fallout Vault Door
-@inputs Button
+@inputs Button [Alarm1 Alarm2]:entity
 @outputs Fade Fade2
 @persist Val Val2 Size OpeningSpeed RotatingSpeed Fade
 @model models/sprops/cuboids/height12/size_1/cube_12x12x12.mdl
@@ -114,11 +114,13 @@ if(Button){
     }
 }
 if(clk("play")){
-    entity():soundPlay("alarm",0,"ambient/alarms/combine_bank_alarm_loop4.wav")
+    Alarm1:soundPlay("alarm1",0,"ambient/alarms/combine_bank_alarm_loop4.wav")
+    Alarm2:soundPlay("alarm2",0,"ambient/alarms/combine_bank_alarm_loop4.wav")
     entity():soundPlay("moving",0,"doors/doormove1.wav")
 }
 if(clk("stop")){
-    entity():soundPlay("alarm",0,"")
+    Alarm1:soundPlay("alarm1",0,"")
+    Alarm2:soundPlay("alarm2",0,"")
     entity():soundPlay("stop",0,"doors/garage_stop1.wav")
     entity():soundPlay("moving",0,"")
 }
