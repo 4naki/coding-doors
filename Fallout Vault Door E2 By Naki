@@ -1,128 +1,145 @@
-@name Fallout Vault Door
-@inputs Button
-@outputs Fade Fade2
-@persist Val Val2 Size OpeningSpeed RotatingSpeed Fade
-@model models/sprops/cuboids/height12/size_1/cube_12x12x12.mdl
-interval(100)
-
+@name Door Controller
+@inputs ForceClose Input1:string Input2:string DetectedEntities:array
+@outputs Toggle String:string
+@persist Toggle Password:string AutoCloseTime AutoClose String:string LoggedIn Text:string LogInText:string AllowUser Blink:string AutoLogoutAfterClosing AutoCloseOwnerDetected AutoDetectOwner AutoCloseTimeOwnerDetected
 if(first()){
+    AutoClose=0                 #in case you want to have an autoclose function
+    AutoCloseTime=25000         #autoclose delay in milliseconds 1000=1 second
     
-    Size=1.35           #def. 1
-    OpeningSpeed=20     #def. 20
-    RotatingSpeed=30    #def. 30
+    AutoDetectOwner=0               #used for a detecting owner nearing the door from outside
+    AutoCloseOwnerDetected=1
+    AutoCloseTimeOwnerDetected=5500   #auto close time for detecting the owner
     
-    BaseMaterial="sprops/textures/gear_metal"
-    DoorMaterial="sprops/textures/sprops_metal3"
-    RackMaterial="sprops/textures/gear_metal"
+    AutoLogoutAfterClosing=0    #automatically log you out when the door closes
     
-    
-    
-    entity():setAlpha(0)
-    
-    #Door Moving Holo
-    holoCreate(1)
-    holoParent(1,entity())
-    holoAng(1,entity():toWorld(ang(0,0,0)))
-    holoAlpha(1,0)
-    
-    #Door Rotating Holo
-    holoCreate(2)
-    holoPos(2,holoEntity(1):toWorld(vec(0,0,0)))
-    holoAng(2,holoEntity(1):toWorld(ang(0,0,0)))
-    holoParent(2,1)
-    holoAlpha(2,0)
-    
-    #Door
-    holoCreate(3)
-    holoModel(3,"models/sprops/mechanics/sgears/spur_16t_s.mdl")
-    holoPos(3,holoEntity(2):toWorld(vec(0,0,0)))
-    holoAng(3,holoEntity(2):toWorld(ang(0,-17,0)))
-    holoParent(3,2)
-    holoScale(3,vec(10,10,7)*Size)
-    holoMaterial(3,DoorMaterial)
-    
-    #Rack
-    holoCreate(4)
-    holoModel(4,"models/sprops/mechanics/racks/rack_12t_l.mdl")
-    holoPos(4,entity():toWorld(vec(-30.65,44.8,100*0.235)*Size))
-    holoAng(4,entity():toWorld(ang(90,0,90)))
-    holoParent(4,entity())
-    holoScale(4,vec(3.5,5,2)*Size)
-    holoMaterial(4,RackMaterial)
-    
-    holoCreate(5)
-    holoModel(5,"models/sprops/misc/sq_holes/sqhole_d0_24.mdl")
-    holoPos(5,entity():toWorld(vec(0,0,0)))
-    holoAng(5,entity():toWorld(ang(0,0,90)))
-    holoParent(5,entity())
-    holoScale(5,vec(4,7.5,4)*Size)
-    holoMaterial(5,BaseMaterial)
-    
-    holoCreate(6)
-    holoPos(6,entity():toWorld(vec(0,0,0)))
-    holoAng(6,entity():toWorld(ang(0,(45/4),0)))
-    holoParent(6,entity())
-    holoAlpha(6,0)
-    
-    for(I=1,16){
-        holoCreate(I+6)
-        holoPos(I+6,holoEntity(6):toWorld(vec(0,0,0)))
-        holoAng(I+6,holoEntity(6):toWorld(ang(0,(45/4)*I*2,0)))
-        holoParent(I+6,holoEntity(6))
-        holoAlpha(I+6,0)
-    }
-    for(I=1,16){
-        holoCreate(I+6+16)
-        holoModel(I+6+16,"models/sprops/geometry/hhex_12.mdl")
-        holoPos(I+6+16,holoEntity(I+6):toWorld(vec(0,42.5,0)*Size))
-        holoAng(I+6+16,holoEntity(I+6):toWorld(ang(0,0,90)))
-        holoParent(I+6+16,holoEntity(I+6))
-        holoScale(I+6+16,vec(1.325,7.5,3)*Size)
-        holoMaterial(I+6+16,BaseMaterial)
-    }
-    holoCreate(999)
-    holoModel(999,"models/sprops/geometry/fring_30.mdl")
-    holoPos(999,entity():toWorld(vec(0,0,0)))
-    holoAng(999,entity():toWorld(ang(0,0,90)))
-    holoParent(999,entity())
-    holoScale(999,vec(3.7,7.55,3.7)*Size)
-    holoMaterial(999,BaseMaterial)
-
+    Password="DEFAULTPASSWORD"  #change this to what ever you want to use as your password
+    LoggedIn=0
+    Toggle=0
+    timer("blink",10)
 }
-
-if(Button){
-    if(Val2==0){
-        if(Val<100){
-            Val+=100/OpeningSpeed
+if(AutoCloseOwnerDetected==1){
+if(AutoDetectOwner==1){
+if(DetectedEntities:count()>0){
+foreach(I,E:entity=DetectedEntities){
+    if(E==owner()){
+        if(Toggle==0){
+            Toggle=1
+            timer("autoclose",AutoCloseTimeOwnerDetected+4000)
         }
     }
-    if(Val==100){
-        if(Val2<90){
-            Val2+=90/RotatingSpeed
-        }
+}
+}
+}
+}
+if(LoggedIn==1){
+    LogInText="Logged In: Yes"
+    if(Input1=="logout"){
+        LoggedIn=0
     }
+    if(Input2=="logout"){
+        LoggedIn=0
+    }
+if(Input1=="open"){
+    if(Toggle==0){
+        Toggle=1
+    }
+}
+if(Input2=="open"){
+    if(Toggle==0){
+        Toggle=1
+    }
+}
+if(Input1=="close"){
+    if(Toggle==1){
+        Toggle=0
+    }
+}
+if(Input2=="close"){
+    if(Toggle==1){
+        Toggle=0
+    }
+}
 }else{
-    if(Val2==0){
-        if(Val>0){
-            Val-=100/OpeningSpeed
-        }
+    if(Input1==Password){
+        LoggedIn=1
     }
-    if(Val==100){
-        if(Val2>0){
-            Val2-=90/RotatingSpeed
-        }
+    if(Input2==Password){
+        LoggedIn=1
     }
 }
-holoPos(1, entity():toWorld(vec(-Val2*0.685,0,Val*0.235)*Size))
-holoAng(2, holoEntity(1):toWorld(ang(0,-Val2,0)))
+if(ForceClose){
+    if(Toggle==1){
+        Toggle=0
+    }
+}
 
-if(Val2==90){
-    Fade=1
-    Fade2=0
-}else{
-    Fade=0
-    Fade2=1
+if(changed(Toggle)&Toggle){
+    if(AutoClose){
+        timer("autoclose",AutoCloseTime+4000)
+    }
 }
-if(dupefinished()){
-    reset()
+if(clk("autoclose")){
+    if(Toggle==1){
+        Toggle=0
+    }
 }
+if(LoggedIn==0){
+    LogInText="Logged In: No"
+    if(changed(Input1|Input2)&Input1|Input2){
+    if(Input1!=Password){
+        if(Input2!=Password){
+            AllowUser=0
+            Text="Invalid Password!"
+            timer("refresh",3000)
+        }else{
+            AllowUser=0
+            Text="Logged in Successfully!"
+            timer("refresh",3000)
+        }
+    }else{
+    if(Input2!=Password){
+        AllowUser=0
+        Text="Invalid Password!"
+        timer("refresh",3000)
+    }else{
+        AllowUser=0
+        Text="Logged in Successfully!"
+        timer("refresh",3000)
+    }
+    }
+    }
+}
+if(AutoLogoutAfterClosing){
+if(changed(Toggle)){
+    if(Toggle==0){
+        LoggedIn=0
+    }
+}
+}
+if(changed(LoggedIn)){
+    timer("refresh",10)
+}
+if(Toggle==1){
+    DoorStatus="Door Status: Open"
+}
+if(Toggle==0){
+    stoptimer("autoclose")
+    DoorStatus="Door Status: Closed"
+}
+if(clk("refresh")){
+    AllowUser=1
+}
+if(clk("blink")){
+    if(AllowUser==1){
+        Text="User:_"
+    }
+    timer("blink2",600)
+}
+if(clk("blink2")){
+    if(AllowUser==1){
+        Text="User:"
+    }
+    timer("blink",600)
+}
+String="Vault Control System V1.0"+"<br>"+
+"----------------------------------------------------------------"+"<br>"+"<br>"+DoorStatus+"<br>"+LogInText+"<br>"+"<br>"+"----------------------------------------------------------------"+"<br>"+Text
