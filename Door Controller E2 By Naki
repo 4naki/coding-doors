@@ -1,7 +1,7 @@
 @name Door Controller
 @inputs ForceClose Input1:string Input2:string DetectedEntities:array
 @outputs Toggle String:string
-@persist Toggle Password:string Version:string AutoCloseTime AutoClose String:string LoggedIn Text:string LogInText:string AllowUser Blink:string AutoLogoutAfterClosing AutoCloseOwnerDetected AutoDetectOwner AutoCloseTimeOwnerDetected
+@persist Toggle Password:string AutoCloseTimeText:string AutoCloseText:string Version:string AutoCloseTime AutoClose String:string LoggedIn Text:string LogInText:string AllowUser Blink:string AutoLogoutAfterClosing AutoCloseOwnerDetected AutoDetectOwner AutoCloseTimeOwnerDetected
 if(first()){
     AutoClose=0                 #in case you want to have an autoclose function
     AutoCloseTime=25000         #autoclose delay in milliseconds 1000=1 second
@@ -17,7 +17,7 @@ if(first()){
     Toggle=0
     timer("blink",10)
     
-    Version="V1.3"
+    Version="V1.4"
 }
 if(AutoCloseOwnerDetected==1){
 if(AutoDetectOwner==1){
@@ -34,6 +34,16 @@ foreach(I,E:entity=DetectedEntities){
 }
 }
 if(LoggedIn==1){
+    if(changed(Input1)&Input1){
+        if(Input1=="autoclose"){
+            AutoClose=!AutoClose
+        }
+    }
+    if(changed(Input1)&Input1){
+        if(Input1:explode(" ")[1,string]=="autoclosetime"){
+            AutoCloseTime=Input1:explode(" ")[2,string]:toNumber()
+        }
+    }
     LogInText="Logged In: Yes"
     if(Input1=="logout"){
         LoggedIn=0
@@ -143,5 +153,12 @@ if(clk("blink2")){
     }
     timer("blink",600)
 }
+if(AutoClose){
+    AutoCloseText="Auto Close: Yes"
+    AutoCloseTimeText="Auto Close Delay: "+AutoCloseTime/1000+" Seconds"
+}else{
+    AutoCloseText="Auto Close: No"
+    AutoCloseTimeText="Auto Close Delay: N/A"
+}
 String="Vault Control System "+Version+"<br>"+
-"----------------------------------------------------------------"+"<br>"+"<br>"+DoorStatus+"<br>"+LogInText+"<br>"+"<br>"+"----------------------------------------------------------------"+"<br>"+Text
+"----------------------------------------------------------------"+"<br>"+"<br>"+DoorStatus+"<br>"+AutoCloseText+"<br>"+AutoCloseTimeText+"<br>"+LogInText+"<br>"+"<br>"+"----------------------------------------------------------------"+"<br>"+Text
