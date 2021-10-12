@@ -41,10 +41,16 @@ if(LoggedIn==1){
         if(Input1=="autoclose"){
             AutoClose=!AutoClose
         }
-    }
-    if(changed(Input1)&Input1){
+        if(Input1=="lockdown"){
+            LockDown=!LockDown
+        }
         if(Input1:explode(" ")[1,string]=="autoclosetime"){
             AutoCloseTime=Input1:explode(" ")[2,string]:toNumber()
+        }
+    }
+    if(changed(Input2Override)&Input2Override){
+        if(Input2=="lockdown"){
+            LockDown=!LockDown
         }
     }
     LogInText="Logged In: Yes"
@@ -53,12 +59,6 @@ if(LoggedIn==1){
     }
     if(Input2Override=="logout"){
         LoggedIn=0
-    }
-    if(Input1=="lockdown"){
-        LockDown=!LockDown
-    }
-    if(Input2=="lockdown"){
-        LockDown=!LockDown
     }
 if(Input1=="open"){
     if(Toggle==0){
