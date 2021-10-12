@@ -2,13 +2,42 @@
 @inputs ForceClose Input1:string Input2:string
 @outputs Toggle String:string
 @persist Toggle Password:string AutoCloseTime AutoClose String:string LoggedIn Text:string LogInText:string AllowUser Blink:string AutoLogoutAfterClosing
+
+#[
+    how to use:
+    
+    spawn 2 text screens and 2 text entries from wire
+    
+    screen options:
+    
+    Text Size = 3
+    
+    Horizontal Alignment = 0
+    
+    Vertical Alignment = 0
+    
+    text entry opntions:
+    
+    Hold Length = 2
+    
+    Disable Use = Unchecked
+    
+    Wire Input1 from this e2 to one of your text entries, Input2 to the other text entry
+    
+    Wire Button from Fallout Door E2 to Toggle in this e2
+    
+    From both screen wire String to this e2's String output
+    
+    that's all enjoy
+]#
+
 if(first()){
     AutoClose=1                 #in case you want to have an autoclose function
     AutoCloseTime=25000         #autoclose delay in milliseconds 1000=1 second
     
     AutoLogoutAfterClosing=1    #automatically log you out when the door closes
     
-    Password="aezakmi"  #change this to what ever you want to use as your password
+    Password="DEFAULTPASSWORD"  #change this to what ever you want to use as your password
     LoggedIn=0
     Toggle=0
     timer("blink",10)
